@@ -26,7 +26,7 @@ class Module:
 		self.time = times[self.hour]
 
 	def __repr__(self):
-		return ' '.join(self.day, str(self.hour), self.time, self.name, self.nr, self.faculty, self.room, self.comment)
+		return ' '.join([self.day, str(self.hour), self.time, self.name, self.nr, self.faculty, self.room, self.comment])
 
 	def __eq__(self, other):
 		return (self.nr == other.nr) and (self.hour == other.hour)
@@ -46,14 +46,17 @@ def get_schedule(for_module):
 	lines = csv.split("\n")
 	lines.pop(0)
 
+	module_list = []
 	modules = {'Mo':[], 'Di':[], 'Mi':[], 'Do':[], 'Fr':[]}
 
 	for l in lines:
 		row = l.split(";")
 		if len(row) >=4 and row[4] == for_module and row[2] != '':
-			module = Module(row)
-			if(module.day in modules):
-				modules[module.day].append(module)
+			module_list.append(Module(row))
+
+	for module in list(set(module_list)):
+		if(module.day in modules):
+			modules[module.day].append(module)
 
 	print('Montag____________________________________________________')
 	for module in sorted(modules['Mo'], key=lambda module: module.hour):
@@ -80,7 +83,6 @@ def get_schedule(for_module):
 		module.prettyprint()
 	print('')	
 
-
 def main(argv): 
 	module = ''
 	try:
@@ -92,7 +94,6 @@ def main(argv):
 		if opt == '-m':
 			module = arg 
 			get_schedule(module)
-
 
 if __name__ == "__main__":
    main(sys.argv[1:])
