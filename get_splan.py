@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+'''
+get_splan.py
+
+Little helper to download and parse the schedule from https://raumservice.htwsaar.de
+Make sure you have python3 installed on your machine as we are using repective libs.
+
+Usage: chmod 755 get_splan.py; ./get_splan.py -m PIM 
+'''
 import urllib.request
 import sys, getopt
 
@@ -18,7 +26,7 @@ class Module:
 	def __init__(self, row):
 		self.day = row[0]
 		self.hour = int(row[1])
-		self.name = row[2].replace('"', '')
+		self.name = row[2].replace('"', '') # Remove quotation marks
 		self.nr = row[3]
 		self.faculty = row[4]
 		self.room = row[5]
@@ -44,7 +52,7 @@ def get_schedule(for_module):
 	data = urllib.request.urlopen(url)
 	csv = str(data.read().decode('latin1'))
 	lines = csv.split("\n")
-	lines.pop(0)
+	lines.pop(0) # Remove the header
 
 	module_list = []
 	modules = {'Mo':[], 'Di':[], 'Mi':[], 'Do':[], 'Fr':[]}
@@ -86,12 +94,15 @@ def get_schedule(for_module):
 def main(argv): 
 	module = ''
 	try:
-		opts, args = getopt.getopt(argv,"m:")
+		opts, args = getopt.getopt(argv,"hm:")
 	except getopt.GetoptError:
 		print('get_schedule.py -m <MODULE>')
 		sys.exit(2)
 	for opt, arg in opts:
-		if opt == '-m':
+		if opt == '-h':
+			print('get_schedule.py -m <MODULE>')
+			print('<MODULE>=PIB, PIM, KIM, ...')
+		elif opt == '-m':
 			module = arg 
 			get_schedule(module)
 
